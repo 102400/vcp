@@ -1,12 +1,12 @@
-package dao;
+package service;
 
 import java.util.List;
 
 import entity.FollowerCategory;
 
-public interface FollowerCategoryDAO {
+public interface FollowerCategoryService {
 	
-	public int save(FollowerCategory followerCategory);
 	public List<FollowerCategory> findFollowerCategoryListByUserId(FollowerCategory followerCategory);
-
+	public int addFollowerCategory(FollowerCategory followerCategory);
+	
 }

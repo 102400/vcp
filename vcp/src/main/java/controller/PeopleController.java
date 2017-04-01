@@ -1,5 +1,7 @@
 package controller;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +18,7 @@ import service.PictureService;
 import service.UserService;
 
 @Controller
-@RequestMapping("/people")
+@RequestMapping("/people/{user_id}")
 public class PeopleController {
 	
 	@Autowired
@@ -28,8 +30,8 @@ public class PeopleController {
 	@Autowired
 	private PictureService pictureService;
 	
-	@RequestMapping(path = "/{user_id}", method = RequestMethod.GET)
-	public String get(Model model,HttpServletRequest request, @PathVariable int user_id) {
+	@RequestMapping(method = RequestMethod.GET)
+	public String people(Model model,HttpServletRequest request, @PathVariable int user_id) {
 		User people = new User();
 		people.setUserId(user_id);
 		people = userService.findUserByUserId(people);
@@ -51,6 +53,26 @@ public class PeopleController {
 		}
 		
 		return "people";
+	}
+	
+	@RequestMapping(path="/followers", method = RequestMethod.GET)
+	public String follower(Model model,HttpServletRequest request, @PathVariable int user_id) {
+		
+		User people = new User();
+		people.setUserId(user_id);
+		people = userService.findUserByUserId(people);
+		if(people==null) {
+			return "redirect:/";
+		}
+		model.addAttribute("people", people);
+		
+		Follower follower = new Follower();
+		follower.setUserId(user_id);
+		List<User> followerList = followerService.findFollowerByUserId(follower);
+		
+		model.addAttribute("followerList", followerList);
+		
+		return "followers";
 	}
 
 }

@@ -60,6 +60,10 @@
     </filter-mapping>
     <filter-mapping>
         <filter-name>isLoginFilter</filter-name>
+        <url-pattern>/manage/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>isLoginFilter</filter-name>
         <url-pattern>/ajax/*</url-pattern>
     </filter-mapping>
     <!--

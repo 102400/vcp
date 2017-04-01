@@ -1,14 +1,19 @@
 package service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import dao.FollowerCategoryDAO;
 import dao.FollowerDAO;
 import dao.SettingDAO;
 import dao.UserDAO;
 import entity.Follower;
+import entity.FollowerCategory;
 import entity.Setting;
 import entity.User;
 import service.FollowerService;
@@ -19,6 +24,9 @@ public class FollowerServiceImpl implements FollowerService {
 	
 	@Autowired
 	private FollowerDAO followerDao;
+	
+	@Autowired
+	private FollowerCategoryDAO followerCategoryDao;
 	
 	@Autowired
 	private SettingDAO settingDao;
@@ -62,8 +70,6 @@ public class FollowerServiceImpl implements FollowerService {
 		user.setFollowers(-1);
 		userDao.updateFollowers(user);
 		
-		boolean b = userDao.updateFollowing(user);
-		
 		
 		User userF = new User();
 		userF.setUserId(follower.getFollowerId());
@@ -77,6 +83,39 @@ public class FollowerServiceImpl implements FollowerService {
 	public boolean isFollowerInTable(Follower follower) {
 		// TODO Auto-generated method stub
 		return followerDao.isFollowerInTable(follower);
+	}
+
+	@Override
+	public List<User> findFollowerByUserId(Follower follower) {
+		// TODO Auto-generated method stub
+		List<Follower> followerList = followerDao.findFollowerByUserId(follower);
+		if(followerList==null) return null;
+		List<User> userList = new ArrayList<>();
+		for(Follower f : followerList) {
+			User user = new User();
+			user.setUserId(f.getFollowerId());
+			user = userDao.findUserByUserId(user);
+			userList.add(user);
+		}
+		
+		return userList.size()==0 ? null : userList;
+	}
+
+	@Override
+	public boolean updateFollowerCategory(Follower follower) {
+		// TODO Auto-generated method stub
+		//检查category是否由这个用户所属
+		FollowerCategory followerCategory = new FollowerCategory();
+		followerCategory.setUserId(follower.getUserId());
+		List<FollowerCategory> followerCategoryList = followerCategoryDao.findFollowerCategoryListByUserId(followerCategory);
+		if(followerCategoryList==null) return false;
+		for(FollowerCategory fc :followerCategoryList) {
+			if(fc.getCategoryId()==follower.getCategoryId()) {
+				return followerDao.updateFollowerCategory(follower);
+			}
+		}
+		
+		return false;
 	}
 
 }

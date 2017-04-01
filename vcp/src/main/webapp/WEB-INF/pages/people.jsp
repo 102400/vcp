@@ -11,12 +11,9 @@
 <jsp:include page="include/head.jsp"></jsp:include>
 <h3>${people.nickname}</h3>
 关注了:<span id="following">${people.following}</span>
-关注者:<span id="followers">${people.followers}</span>  <br />
+关注者:<a href="/people/${people.userId}/followers"><span id="followers">${people.followers}</span></a>  <br />
 <c:if test="${userId!=people.userId&&isLogin}">
-	<!-- 已关注 -->
-	<!-- 
-	<button type="button" class="btn btn-default" id=“follow” value=“true”>已关注</button>
-	 -->
+
 	<c:choose>
 		<c:when test="${isFollow}">
 			<button type="button" class="btn btn-success" id="follow" value="true">已关注</button>
