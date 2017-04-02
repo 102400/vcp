@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import entity.Follower;
 import entity.FollowerCategory;
-import json.AddCategoryJson;
-import json.AddUserToCategory;
+import json.AddFollowerCategoryJson;
+import json.AddUserToFollowerCategoryJson;
 import json.SuccessJson;
 import service.FollowerCategoryService;
 import service.FollowerService;
@@ -28,11 +28,11 @@ public class FollowerCategoryController {
 	private FollowerService followerService;
 	
 	@RequestMapping(path="/addCategory", method=RequestMethod.POST)
-	public @ResponseBody SuccessJson addCategory(HttpServletRequest request, @RequestBody AddCategoryJson addCategoryJson) {
+	public @ResponseBody SuccessJson addCategory(HttpServletRequest request, @RequestBody AddFollowerCategoryJson addCategoryJson) {
 		SuccessJson successJson = new SuccessJson();
+		successJson.setIsSuccess(false);
 		int userId = addCategoryJson.getUserId();
-		if((int) request.getAttribute("userId") != userId || addCategoryJson.getCategoryName()==null || addCategoryJson.getCategoryName().equals("")) {
-			successJson.setIsSuccess(false);
+		if(!(boolean) request.getAttribute("isLogin") || (int) request.getAttribute("userId") != userId || addCategoryJson.getCategoryName()==null || addCategoryJson.getCategoryName().equals("")) {
 			return successJson;
 		}
 		FollowerCategory followerCategory = new FollowerCategory();
@@ -46,7 +46,6 @@ public class FollowerCategoryController {
 		}
 		int followerCategoryId = followerCategoryService.addFollowerCategory(followerCategory);
 		if(followerCategoryId<=0) {
-			successJson.setIsSuccess(false);
 			return successJson;
 		}
 		
@@ -57,11 +56,11 @@ public class FollowerCategoryController {
 	}
 	
 	@RequestMapping(path="/addUserToCategory", method=RequestMethod.POST)
-	public @ResponseBody SuccessJson addUserToCategory(HttpServletRequest request, @RequestBody AddUserToCategory addUserToCategory) {
+	public @ResponseBody SuccessJson addUserToCategory(HttpServletRequest request, @RequestBody AddUserToFollowerCategoryJson addUserToCategory) {
 		SuccessJson successJson = new SuccessJson();
 		successJson.setIsSuccess(false);
 		int userId = addUserToCategory.getUserId();
-		if((int) request.getAttribute("userId") != userId || addUserToCategory.getCategoryId()<=0) {
+		if(!(boolean) request.getAttribute("isLogin") || (int) request.getAttribute("userId") != userId || addUserToCategory.getCategoryId()<=0) {
 			return successJson;
 		}
 		

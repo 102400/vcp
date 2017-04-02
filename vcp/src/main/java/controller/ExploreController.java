@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import config.Config;
 import entity.Picture;
 import service.PictureService;
 
@@ -25,10 +26,10 @@ public class ExploreController {
 		if(page<=0) {
 			return "redirect:/explore";
 		}
-		int defaultMax = 32;
+		int max = Config.DEFAULT_PICTURE_MAX;
 		
 		List<Picture> pictureList = 
-				pictureService.searchAllByFirstAndMax((page-1) * defaultMax, defaultMax);
+				pictureService.searchAllByFirstAndMax((page-1) * max, max);
 		model.addAttribute("allPictureList", pictureList);
 		model.addAttribute("previous", page==1 ? 1 : page - 1);
 		model.addAttribute("next", page + 1);

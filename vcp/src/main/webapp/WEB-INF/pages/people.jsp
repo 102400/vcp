@@ -24,6 +24,42 @@
 	</c:choose>
 </c:if>
 <hr>
+<form class="float_left">
+<input type="hidden" name="page" value="${previous}" />
+<button class="btn btn-default btn-lg btn-block" type="submit" >上一页</button>
+</form>
+<form class="float_right">
+<input type="hidden" name="page" value="${next}" />
+<button class="btn btn-default btn-lg btn-block" type="submit" >下一页</button>
+</form>
+<hr class="float_clear_both">
+<c:forEach items="${allPictureList}" var="picture">
+	<!--  
+	uuid: ${picture.uuid} <br />
+	user_id: ${picture.userId} <br />
+	name: ${picture.name} <br /
+	-->
+	<div>
+		<a href="/picture/${picture.uuid}" target="blank">
+			<img src="/pic/${picture.uuid}${picture.suffix}"
+				alt="${picture.name}"
+				class="float_right"
+				width="19.5%">
+		</a>
+	</div>
+			
+</c:forEach>
+<hr class="float_clear_both">
+<hr>
+<form class="float_left">
+<input type="hidden" name="page" value="${previous}" />
+<button class="btn btn-default btn-lg btn-block" type="submit" >上一页</button>
+</form>
+<form class="float_right">
+<input type="hidden" name="page" value="${next}" />
+<button class="btn btn-default btn-lg btn-block" type="submit" >下一页</button>
+</form>
+
 people.jsp
 
 <script type="text/javascript">

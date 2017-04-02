@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import dao.PictureDAO;
+import entity.Follower;
 import entity.Picture;
 import entity.User;
 
@@ -54,6 +55,45 @@ public class PictureDAOImpl implements PictureDAO {
 		
 		
 		return list.size()==0 ? null : list.get(0);
+	}
+
+	@Override
+	public Picture findPictureByPictureId(Picture picture) {
+		// TODO Auto-generated method stub
+		return sessionFactory.getCurrentSession().find(Picture.class, picture.getPictureId());
+	}
+
+	@Override
+	public boolean updatePicture(Picture picture) {
+		// TODO Auto-generated method stub
+		sessionFactory.getCurrentSession().update(picture);
+		return true;
+	}
+
+	@Override
+	public List<Picture> searchPeopleAllByFirstAndMax(Follower follower, int first, int max) {
+		// TODO Auto-generated method stub
+		Session session = sessionFactory.getCurrentSession();
+		String query = "SELECT p FROM Picture p WHERE p.userId=" + follower.getUserId() + " ORDER BY p DESC";
+		TypedQuery<Picture> typedQuery=session.createQuery(query, Picture.class);
+		typedQuery.setFirstResult(first);
+		typedQuery.setMaxResults(max);
+		
+		return typedQuery.getResultList();
+	}
+
+	@Override
+	public List<Picture> searchPeoplePublicByFirstAndMax(Follower follower, int first, int max) {
+		// TODO Auto-generated method stub
+		Session session = sessionFactory.getCurrentSession();
+		String query = "SELECT p FROM Picture p WHERE p.userId=" + follower.getUserId() 
+			+ " AND p.authorize=2 "
+			+ " ORDER BY p DESC";
+		TypedQuery<Picture> typedQuery=session.createQuery(query, Picture.class);
+		typedQuery.setFirstResult(first);
+		typedQuery.setMaxResults(max);
+		
+		return typedQuery.getResultList();
 	}
 
 }
