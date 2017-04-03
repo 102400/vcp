@@ -35,6 +35,7 @@ public class PeopleController {
 	
 	@RequestMapping(method = RequestMethod.GET)
 	public String people(Model model,HttpServletRequest request, @PathVariable int people_id, @RequestParam(value="page", required=true, defaultValue="1") int page) {
+		
 		User people = new User();
 		people.setUserId(people_id);
 		people = userService.findUserByUserId(people);
@@ -47,12 +48,17 @@ public class PeopleController {
 		follower.setUserId(people_id);
 		if((boolean) request.getAttribute("isLogin")) {
 			follower.setFollowerId((int) request.getAttribute("userId"));
+			
 			if(followerService.isFollowerInTable(follower)) {
 				model.addAttribute("isFollow", true);
+				System.out.println("aaa");
 			}
 			else {
 				model.addAttribute("isFollow", false);
+				System.out.println("bbb");
 			}
+			System.out.println(follower.getUserId());
+			System.out.println(follower.getFollowerId());
 		}
 		else {
 			follower.setFollowerId(0);

@@ -10,8 +10,8 @@
 <jsp:include page="include/head.jsp"></jsp:include>
 
 <form method="post" enctype="multipart/form-data">
-	<input name="file" type="file" multiple>(支持 .jpg .png)
-	<input type="submit" value="上传">(总和不得大于256mb)
+	<input name="file" type="file" multiple>(支持 .jpg .png)<br />
+	<button type="submit" value="上传" class="btn btn-success">上传</button>(总和不得大于256mb)
 </form>
 
 upload.jsp

@@ -9,6 +9,7 @@ public interface FollowerDAO {
 	public int save(Follower follower);
 	public boolean deleteFollower(Follower follower);
 	public boolean isFollowerInTable(Follower follower);
+	public Follower findFollowerByUserIdAndFollowerId(Follower follower);
 	public List<Follower> findFollowerByUserId(Follower follower);
 	public boolean updateFollowerCategory(Follower follower);
 

@@ -37,8 +37,8 @@ public class FollowerDAOImpl implements FollowerDAO {
 		CriteriaDelete<Follower> criteria = builder.createCriteriaDelete(Follower.class);
 //		CriteriaQuery<Follower> criteria = builder.createQuery(Follower.class);
 		Root<Follower> contactRoot = criteria.from(Follower.class);
-		criteria.where(builder.equal(contactRoot.get("userId"), follower.getUserId()));
-		criteria.where(builder.equal(contactRoot.get("followerId"), follower.getFollowerId()));
+		criteria.where(builder.equal(contactRoot.get("userId"), follower.getUserId()), 
+				builder.equal(contactRoot.get("followerId"), follower.getFollowerId()));
 //		List<Follower> list = session.createQuery(criteria).getResultList();
 		int x = session.createQuery(criteria).executeUpdate();
 		
@@ -54,11 +54,41 @@ public class FollowerDAOImpl implements FollowerDAO {
 		CriteriaQuery<Follower> criteria = builder.createQuery(Follower.class);
 		Root<Follower> contactRoot = criteria.from(Follower.class);
 		criteria.select(contactRoot);
-		criteria.where(builder.equal(contactRoot.get("userId"), follower.getUserId()));
-		criteria.where(builder.equal(contactRoot.get("followerId"), follower.getFollowerId()));
+//		criteria.where(builder.equal(contactRoot.get("userId"), follower.getUserId()));
+//		criteria.where(builder.equal(contactRoot.get("followerId"), follower.getFollowerId()));
+		criteria.where(builder.equal(contactRoot.get("userId"), follower.getUserId()), 
+				builder.equal(contactRoot.get("followerId"), follower.getFollowerId()));
 		List<Follower> list = session.createQuery(criteria).getResultList();
 		
+		System.out.println("***");
+		System.out.println(follower.getUserId());
+		System.out.println(follower.getFollowerId());
+		System.out.println("***");
+		
+		if(list.size()>0) {
+			System.out.println(list.size());
+			System.out.println("@");
+			System.out.println(list.get(0).getUserId());
+			System.out.println(list.get(0).getFollowerId());
+			System.out.println(list.get(0).getCategoryId());
+		}
+		
 		return list.size()==0 ? false : true;
+	}
+	
+	@Override
+	public Follower findFollowerByUserIdAndFollowerId(Follower follower) {
+		Session session = sessionFactory.getCurrentSession();
+		
+		CriteriaBuilder builder = session.getCriteriaBuilder();
+		CriteriaQuery<Follower> criteria = builder.createQuery(Follower.class);
+		Root<Follower> contactRoot = criteria.from(Follower.class);
+		criteria.select(contactRoot);
+		criteria.where(builder.equal(contactRoot.get("userId"), follower.getUserId()), 
+				builder.equal(contactRoot.get("followerId"), follower.getFollowerId()));
+		List<Follower> list = session.createQuery(criteria).getResultList();
+		
+		return list.size()==0 ? null : list.get(0);
 	}
 
 	@Override

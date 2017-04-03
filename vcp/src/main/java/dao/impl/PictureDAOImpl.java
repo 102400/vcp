@@ -7,6 +7,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
+import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,6 @@ import org.springframework.stereotype.Repository;
 import dao.PictureDAO;
 import entity.Follower;
 import entity.Picture;
-import entity.User;
 
 @Repository
 public class PictureDAOImpl implements PictureDAO {
@@ -90,6 +90,30 @@ public class PictureDAOImpl implements PictureDAO {
 			+ " AND p.authorize=2 "
 			+ " ORDER BY p DESC";
 		TypedQuery<Picture> typedQuery=session.createQuery(query, Picture.class);
+		typedQuery.setFirstResult(first);
+		typedQuery.setMaxResults(max);
+		
+		return typedQuery.getResultList();
+	}
+
+	@Override
+	public List<Picture> searchPeoplePublicAndProtectedByFirstAndMax(Follower follower, int first, int max) {
+		// TODO Auto-generated method stub
+		Session session = sessionFactory.getCurrentSession();
+		// http://yukinami.github.io/2016/05/21/Hibernate%E4%BD%BF%E7%94%A8outer%20join%20fetch%E9%9B%86%E5%90%88%E6%97%B6%E8%BF%94%E5%9B%9E%E9%87%8D%E5%A4%8D%E7%9A%84%E7%BB%93%E6%9E%9C/
+		// 结果重复 加DISTINCT
+		String query = "SELECT DISTINCT p FROM Picture p, ProtectedPicture pp"
+			+ " WHERE p.userId=" + follower.getUserId() 
+			+ " AND ( p.authorize=2 OR ( p.authorize=3 AND pp.pictureId=p.pictureId AND pp.categoryId=" + follower.getCategoryId() + " ))"
+			+ " ORDER BY p DESC";
+		
+		org.hibernate.query.Query q = session.createQuery("SELECT p FROM Picture p, ProtectedPicture pp"
+			+ " WHERE p.userId=" + follower.getUserId() 
+			+ " AND ( p.authorize=2 OR ( p.authorize=3 AND pp.pictureId=p.pictureId AND pp.categoryId=" + follower.getCategoryId() + " ))"
+			+ " ORDER BY p DESC", Picture.class).setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+		
+		TypedQuery<Picture> typedQuery=session.createQuery(query, Picture.class);
+//		TypedQuery<Picture> typedQuery=q;  //影响分页
 		typedQuery.setFirstResult(first);
 		typedQuery.setMaxResults(max);
 		

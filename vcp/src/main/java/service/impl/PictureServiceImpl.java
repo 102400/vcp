@@ -8,6 +8,7 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import dao.FollowerDAO;
 import dao.PictureDAO;
 import dao.ProtectedPictureDAO;
 import dao.SettingDAO;
@@ -27,6 +28,9 @@ public class PictureServiceImpl implements PictureService {
 	
 	@Autowired
 	private ProtectedPictureDAO protectedPictureDAO;
+	
+	@Autowired
+	private FollowerDAO followerDao;
 	
 	@Autowired
 	private SettingDAO settingDao;
@@ -78,7 +82,7 @@ public class PictureServiceImpl implements PictureService {
 			else {
 				//存在,，修改
 				pp.setCategoryId(protectedPicture.getCategoryId());
-				pp.setPictureId(protectedPicture.getPictureId());
+//				pp.setPictureId(protectedPicture.getPictureId());
 				protectedPictureDAO.updateProtectedPicture(pp);
 			}
 		}
@@ -89,10 +93,9 @@ public class PictureServiceImpl implements PictureService {
 	//peopleId==followerId，说明当前的浏览用户为people，则所有图片都可以看到
 	//未登录的用户，只显示public
 	//先检查是否在followerList里，不是则此用户未关注，显示的还都是public图片
-	//在list里，则先得到follower所在的category(List)，如果所在category是people的默认category，显示的还都是public图片
+	//在list里，则先得到follower所在的category，如果所在category是people的默认category，显示的还都是public图片
 	//不在默认的category则遍历检查picture的authorize，public则显示，如果为protected，查看此图片的所在category
-	//如果图片对应的category在follower所在的category(List)里，则显示
-	//目前follower只对应一个category，但有可能之后增加功能会对应多个，所以要用list
+	//如果图片对应的category在follower所在的category里，则显示
 	@Override
 	public List<Picture> searchPeopleByFirstAndMax(Follower follower, int first, int max) {
 		// TODO Auto-generated method stub
@@ -101,17 +104,29 @@ public class PictureServiceImpl implements PictureService {
 		int followerId = follower.getFollowerId();
 		if(peopleId==followerId) {  //当前的浏览用户为people，则所有图片都可以看到
 			pictureList = pictureDao.searchPeopleAllByFirstAndMax(follower, first, max);
+			return pictureList;
 		}
 		else if(followerId<=0) {  //未登录用户只显示public图片
 			pictureList = pictureDao.searchPeoplePublicByFirstAndMax(follower, first, max);
+			return pictureList;
 		}
 		else {
-			
-			
+			Follower f = followerDao.findFollowerByUserIdAndFollowerId(follower);
+			if(f==null) {  //未关注也只显示public
+				pictureList = pictureDao.searchPeoplePublicByFirstAndMax(follower, first, max);
+				return pictureList;
+			}
+			User user = new User();
+			user.setUserId(f.getUserId());
+			int defaultCategory = settingDao.findSettingByUserId(user).getDefaultFollowerCategory();
+			if(f.getCategoryId()==defaultCategory || defaultCategory<=0) {  //默认category，显示的还都是public图片
+				pictureList = pictureDao.searchPeoplePublicByFirstAndMax(f, first, max);
+				return pictureList;
+			}
+			pictureList = pictureDao.searchPeoplePublicAndProtectedByFirstAndMax(f, first, max);  //
+			return pictureList;
 			
 		}
-		
-		return pictureList;
 	}
 
 }
