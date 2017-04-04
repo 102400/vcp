@@ -60,19 +60,6 @@ public class FollowerDAOImpl implements FollowerDAO {
 				builder.equal(contactRoot.get("followerId"), follower.getFollowerId()));
 		List<Follower> list = session.createQuery(criteria).getResultList();
 		
-		System.out.println("***");
-		System.out.println(follower.getUserId());
-		System.out.println(follower.getFollowerId());
-		System.out.println("***");
-		
-		if(list.size()>0) {
-			System.out.println(list.size());
-			System.out.println("@");
-			System.out.println(list.get(0).getUserId());
-			System.out.println(list.get(0).getFollowerId());
-			System.out.println(list.get(0).getCategoryId());
-		}
-		
 		return list.size()==0 ? false : true;
 	}
 	
